@@ -34,6 +34,7 @@ import { generateVideoToken } from "@/actions/appointments";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { formatDateTime as formatDateTimeUtil, formatTime as formatTimeUtil } from "@/lib/timezone-utils";
 
 export function AppointmentCard({
   appointment,
@@ -67,19 +68,19 @@ export function AppointmentCard({
     data: completeData,
   } = useFetch(markAppointmentCompleted);
 
-  // Format date and time
+  // Format date and time using common utility
   const formatDateTime = (dateString) => {
     try {
-      return format(new Date(dateString), "MMMM d, yyyy 'at' h:mm a");
+      return formatDateTimeUtil(dateString);
     } catch (e) {
       return "Invalid date";
     }
   };
 
-  // Format time only
+  // Format time only using common utility
   const formatTime = (dateString) => {
     try {
-      return format(new Date(dateString), "h:mm a");
+      return formatTimeUtil(dateString);
     } catch (e) {
       return "Invalid time";
     }

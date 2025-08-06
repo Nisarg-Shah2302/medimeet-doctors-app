@@ -7,25 +7,40 @@ import { deductCreditsForAppointment } from "@/actions/credits";
 import { Vonage } from "@vonage/server-sdk";
 import { addDays, addMinutes, format, isBefore, endOfDay } from "date-fns";
 import { Auth } from "@vonage/auth";
+import { formatTimeIST, formatDateIST, toISTStorageString, parseISTStorageString } from "@/lib/timezone-utils";
 
 // Initialize Vonage Video API client
-const credentials = new Auth({
-  applicationId: process.env.NEXT_PUBLIC_VONAGE_APPLICATION_ID,
-  privateKey: process.env.VONAGE_PRIVATE_KEY,
-});
-const options = {};
-const vonage = new Vonage(credentials, options);
+let vonage = null;
+try {
+  const appId = process.env.NEXT_PUBLIC_VONAGE_APPLICATION_ID;
+  const privateKey = process.env.VONAGE_PRIVATE_KEY;
+  
+  if (!appId || !privateKey) {
+    throw new Error("Missing Vonage credentials");
+  }
+  
+  if (privateKey.length < 1000) {
+    throw new Error("Private key appears to be truncated or incomplete");
+  }
+  
+  const credentials = new Auth({
+    applicationId: appId,
+    privateKey: privateKey,
+  });
+  const options = {};
+  vonage = new Vonage(credentials, options);
+} catch (error) {
+  console.warn("⚠️ Vonage Video API not configured properly:", error.message);
+}
 
 /**
  * Book a new appointment with a doctor
  */
 export async function bookAppointment(formData) {
   const { userId } = await auth();
-
   if (!userId) {
     throw new Error("Unauthorized");
   }
-
   try {
     // Get the patient user
     const patient = await db.user.findUnique({
@@ -41,8 +56,8 @@ export async function bookAppointment(formData) {
 
     // Parse form data
     const doctorId = formData.get("doctorId");
-    const startTime = new Date(formData.get("startTime"));
-    const endTime = new Date(formData.get("endTime"));
+    const startTime = parseISTStorageString(formData.get("startTime"));  // Use IST parse function
+    const endTime = parseISTStorageString(formData.get("endTime"));      // Use IST parse function
     const patientDescription = formData.get("description") || null;
 
     // Validate input
@@ -228,6 +243,15 @@ export async function generateVideoToken(formData) {
       userId: user.id,
     });
 
+    // Check if vonage client is properly initialized
+    if (!vonage) {
+      throw new Error("Vonage client is not initialized. Cannot generate video token.");
+    }
+    // Validate session ID format
+    if (!appointment.videoSessionId || typeof appointment.videoSessionId !== 'string') {
+      throw new Error("Invalid video session ID in appointment");
+    }
+    
     // Generate the token with appropriate role and expiration
     const token = vonage.video.generateClientToken(appointment.videoSessionId, {
       role: "publisher", // Both doctor and patient can publish streams
@@ -376,14 +400,20 @@ export async function getAvailableTimeSlots(doctorId) {
         });
 
         if (!overlaps) {
+          // Use common timezone utility functions
+          const startTimeFormatted = formatTimeIST(current);
+          const endTimeFormatted = formatTimeIST(next);
+          const dayFormatted = formatDateIST(current);
+          
           availableSlotsByDay[dayString].push({
-            startTime: current.toISOString(),
-            endTime: next.toISOString(),
-            formatted: `${format(current, "h:mm a")} - ${format(
-              next,
-              "h:mm a"
-            )}`,
-            day: format(current, "EEEE, MMMM d"),
+            startTime: toISTStorageString(current),    // Use IST storage function
+            endTime: toISTStorageString(next),         // Use IST storage function
+            formatted: `${startTimeFormatted} - ${endTimeFormatted}`,
+            day: dayFormatted,
+            // Add timezone info for debugging
+            timezone: "Asia/Kolkata",
+            localStartTime: format(current, "yyyy-MM-dd HH:mm:ss"),
+            localEndTime: format(next, "yyyy-MM-dd HH:mm:ss"),
           });
         }
 

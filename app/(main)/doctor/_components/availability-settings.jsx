@@ -17,6 +17,7 @@ import { format } from "date-fns";
 import { setAvailabilitySlots } from "@/actions/doctor";
 import useFetch from "@/hooks/use-fetch";
 import { toast } from "sonner";
+import { toISTStorageString } from "@/lib/timezone-utils";
 
 export function AvailabilitySettings({ slots }) {
   const [showForm, setShowForm] = useState(false);
@@ -66,9 +67,9 @@ export function AvailabilitySettings({ slots }) {
       return;
     }
 
-    // Add to form data
-    formData.append("startTime", startDate.toISOString());
-    formData.append("endTime", endDate.toISOString());
+    // Add to form data using IST storage format
+    formData.append("startTime", toISTStorageString(startDate));
+    formData.append("endTime", toISTStorageString(endDate));
 
     await submitSlots(formData);
   };

@@ -9,6 +9,7 @@ import { Loader2, Clock, ArrowLeft, Calendar, CreditCard } from "lucide-react";
 import { bookAppointment } from "@/actions/appointments";
 import { toast } from "sonner";
 import useFetch from "@/hooks/use-fetch";
+import { formatDate } from "@/lib/timezone-utils";
 
 export function AppointmentForm({ doctorId, slot, onBack, onComplete }) {
   const [description, setDescription] = useState("");
@@ -47,7 +48,7 @@ export function AppointmentForm({ doctorId, slot, onBack, onComplete }) {
         <div className="flex items-center">
           <Calendar className="h-5 w-5 text-emerald-400 mr-2" />
           <span className="text-white font-medium">
-            {format(new Date(slot.startTime), "EEEE, MMMM d, yyyy")}
+            {formatDate(slot.startTime)}
           </span>
         </div>
         <div className="flex items-center">
