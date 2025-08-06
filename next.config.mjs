@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   experimental: {
-    serverComponentsHmrCache: false, // defaults to true
+    serverComponentsHmrCache: false, // Disable for fresh auth/appointment data
   },
   images: {
     remotePatterns: [
