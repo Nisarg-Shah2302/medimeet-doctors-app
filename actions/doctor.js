@@ -3,7 +3,6 @@
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
-import { parseISTStorageString } from "@/lib/timezone-utils";
 
 /**
  * Set doctor's availability slots
@@ -66,15 +65,15 @@ export async function setAvailabilitySlots(formData) {
       }
     }
 
-    // Create new availability slot
-    const newSlot = await db.availability.create({
-      data: {
-        doctorId: doctor.id,
-        startTime: parseISTStorageString(startTime),  // Use IST parse function
-        endTime: parseISTStorageString(endTime),      // Use IST parse function
-        status: "AVAILABLE",
-      },
-    });
+          // Create new availability slot
+      const newSlot = await db.availability.create({
+        data: {
+          doctorId: doctor.id,
+          startTime: new Date(startTime),
+          endTime: new Date(endTime),
+          status: "AVAILABLE",
+        },
+      });
 
     revalidatePath("/doctor");
     return { success: true, slot: newSlot };

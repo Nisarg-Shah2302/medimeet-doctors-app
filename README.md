@@ -12,7 +12,7 @@
 - **Admin Panel**: Doctor verification, payout processing, platform analytics
 - **Credit System**: Subscription-based consultation credits ($10 per consultation, $8 to doctor)
 
-🛠 **Tech Stack**: Next.js 15 + App Router, PostgreSQL + Prisma ORM, Clerk Authentication, Vonage Video API, Tailwind CSS, IST timezone handling
+🛠 **Tech Stack**: Next.js 15 + App Router, PostgreSQL + Prisma ORM, Clerk Authentication, Vonage Video API, Tailwind CSS
 
 🚀 **Perfect For**: Healthcare startups, telemedicine platforms, appointment booking systems, video consultation services, medical practice management
 
@@ -57,7 +57,7 @@ A comprehensive healthcare platform built with **Next.js 15**, **PostgreSQL**, *
 - **State Management**: React 19 with Server Actions
 - **Authentication**: Clerk Auth with role-based access
 - **Video Calling**: Vonage Client SDK for video consultations
-- **Date Handling**: date-fns with IST timezone support
+- **Date Handling**: date-fns
 - **UI Components**: Radix UI primitives with custom styling
 
 ### Backend Stack
@@ -191,16 +191,7 @@ Visit `http://localhost:3000` to see the application.
 
 ## 🔧 Key Technologies Explained
 
-### IST Timezone Handling
-The platform uses a custom timezone utility system to ensure all appointments are stored and displayed in Indian Standard Time (IST) without UTC conversion:
 
-```javascript
-// Custom IST functions
-toISTStorageString(date)    // Store: "2025-01-15T14:30:00"
-parseISTStorageString(str)  // Parse: IST string → Date object
-formatTimeIST(date)         // Display: "2:30 PM"
-formatDateIST(date)         // Display: "Monday, January 15"
-```
 
 ### Video Integration
 Vonage Video API provides:
@@ -246,7 +237,7 @@ doctors-appointment-platform/
 │   └── pricing.jsx              # Pricing table
 ├── lib/                         # Utility libraries
 │   ├── prisma.js                # Database client
-│   ├── timezone-utils.js        # IST utilities
+
 │   ├── specialities.js          # Medical specialties
 │   └── utils.js                 # General utilities
 ├── prisma/                      # Database
