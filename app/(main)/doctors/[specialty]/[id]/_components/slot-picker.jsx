@@ -6,7 +6,6 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Clock, ChevronRight } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { formatTime } from "@/lib/timezone-utils";
 
 export function SlotPicker({ days, onSelectSlot }) {
   const [selectedSlot, setSelectedSlot] = useState(null);
@@ -95,7 +94,7 @@ export function SlotPicker({ days, onSelectSlot }) {
                               : "text-muted-foreground"
                           }
                         >
-                          {formatTime(slot.startTime)}
+                          {format(new Date(slot.startTime), "h:mm a")}
                         </span>
                       </CardContent>
                     </Card>

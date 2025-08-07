@@ -7,7 +7,6 @@ import { deductCreditsForAppointment } from "@/actions/credits";
 import { Vonage } from "@vonage/server-sdk";
 import { addDays, addMinutes, format, isBefore, endOfDay } from "date-fns";
 import { Auth } from "@vonage/auth";
-import { formatTimeIST, formatDateIST, toISTStorageString, parseISTStorageString } from "@/lib/timezone-utils";
 
 // Initialize Vonage Video API client
 let vonage = null;
@@ -56,8 +55,8 @@ export async function bookAppointment(formData) {
 
     // Parse form data
     const doctorId = formData.get("doctorId");
-    const startTime = parseISTStorageString(formData.get("startTime"));  // Use IST parse function
-    const endTime = parseISTStorageString(formData.get("endTime"));      // Use IST parse function
+    const startTime = new Date(formData.get("startTime"));
+    const endTime = new Date(formData.get("endTime"));
     const patientDescription = formData.get("description") || null;
 
     // Validate input
@@ -400,20 +399,11 @@ export async function getAvailableTimeSlots(doctorId) {
         });
 
         if (!overlaps) {
-          // Use common timezone utility functions
-          const startTimeFormatted = formatTimeIST(current);
-          const endTimeFormatted = formatTimeIST(next);
-          const dayFormatted = formatDateIST(current);
-          
           availableSlotsByDay[dayString].push({
-            startTime: toISTStorageString(current),    // Use IST storage function
-            endTime: toISTStorageString(next),         // Use IST storage function
-            formatted: `${startTimeFormatted} - ${endTimeFormatted}`,
-            day: dayFormatted,
-            // Add timezone info for debugging
-            timezone: "Asia/Kolkata",
-            localStartTime: format(current, "yyyy-MM-dd HH:mm:ss"),
-            localEndTime: format(next, "yyyy-MM-dd HH:mm:ss"),
+            startTime: current.toISOString(),
+            endTime: next.toISOString(),
+            formatted: `${format(current, "h:mm a")} - ${format(next, "h:mm a")}`,
+            day: format(current, "EEEE, MMMM d"),
           });
         }
 
