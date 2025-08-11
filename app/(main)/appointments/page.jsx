@@ -1,10 +1,10 @@
 import { getPatientAppointments } from "@/actions/patient";
-import { AppointmentCard } from "@/components/appointment-card";
 import { PageHeader } from "@/components/page-header";
 import { Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { redirect } from "next/navigation";
 import { getCurrentUser } from "@/actions/onboarding";
+import { AppointmentTabs } from "@/components/appointment-tabs";
 
 export default async function PatientAppointmentsPage() {
   const user = await getCurrentUser();
@@ -13,7 +13,7 @@ export default async function PatientAppointmentsPage() {
     redirect("/onboarding");
   }
 
-  const { appointments, error } = await getPatientAppointments();
+  const { appointments, appointmentCounts, error, loading } = await getPatientAppointments();
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -37,15 +37,12 @@ export default async function PatientAppointmentsPage() {
               <p className="text-red-400">Error: {error}</p>
             </div>
           ) : appointments?.length > 0 ? (
-            <div className="space-y-4">
-              {appointments.map((appointment) => (
-                <AppointmentCard
-                  key={appointment.id}
-                  appointment={appointment}
-                  userRole="PATIENT"
-                />
-              ))}
-            </div>
+            <AppointmentTabs 
+              userRole="PATIENT"
+              appointments={appointments} 
+              appointmentCounts={appointmentCounts}
+              loading={loading}
+            />
           ) : (
             <div className="text-center py-8">
               <Calendar className="h-12 w-12 mx-auto text-muted-foreground mb-3" />
