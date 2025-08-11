@@ -1,24 +1,28 @@
-"use client";
+// "use client";
 
-import { useEffect } from "react";
+// import { useEffect } from "react";
 import { getDoctorAppointments } from "@/actions/doctor";
-import { AppointmentCard } from "@/components/appointment-card";
+// import { AppointmentCard } from "@/components/appointment-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Calendar } from "lucide-react";
-import useFetch from "@/hooks/use-fetch";
+// import useFetch from "@/hooks/use-fetch";
+import { AppointmentTabs } from "@/components/appointment-tabs";
 
-export default function DoctorAppointmentsList() {
-  const {
-    loading,
-    data,
-    fn: fetchAppointments,
-  } = useFetch(getDoctorAppointments);
 
-  useEffect(() => {
-    fetchAppointments();
-  }, []);
+export default async function DoctorAppointmentsList() {
+  // const {
+  //   loading,
+  //   data,
+  //   fn: fetchAppointments,
+  // } = useFetch(getDoctorAppointments);
 
-  const appointments = data?.appointments || [];
+  // useEffect(() => {
+  //   fetchAppointments();
+  // }, []);
+  const { appointments, appointmentCounts, error, loading } = await getDoctorAppointments();
+
+  // const appointments = data?.appointments || [];
+  // const appointmentCounts = data?.appointmentCounts || [];
 
   return (
     <Card className="border-emerald-900/20">
@@ -35,14 +39,20 @@ export default function DoctorAppointmentsList() {
           </div>
         ) : appointments.length > 0 ? (
           <div className="space-y-4">
-            {appointments.map((appointment) => (
+            <AppointmentTabs 
+              userRole="DOCTOR"
+              appointments={appointments} 
+              appointmentCounts={appointmentCounts}
+              loading={loading}
+            />
+            {/* {appointments.map((appointment) => (
               <AppointmentCard
                 key={appointment.id}
                 appointment={appointment}
                 userRole="DOCTOR"
                 refetchAppointments={fetchAppointments}
               />
-            ))}
+            ))} */}
           </div>
         ) : (
           <div className="text-center py-8">

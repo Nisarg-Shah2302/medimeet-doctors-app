@@ -1,22 +1,14 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { format } from "date-fns";
-import { Card, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { generateVideoToken } from "@/actions/appointments";
 import {
-  Calendar,
-  Clock,
-  User,
-  Video,
-  Stethoscope,
-  X,
-  Edit,
-  Loader2,
-  CheckCircle,
-} from "lucide-react";
+  addAppointmentNotes,
+  cancelAppointment,
+  markAppointmentCompleted,
+} from "@/actions/doctor";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import {
   Dialog,
   DialogContent,
@@ -25,20 +17,30 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import {
-  cancelAppointment,
-  addAppointmentNotes,
-  markAppointmentCompleted,
-} from "@/actions/doctor";
-import { generateVideoToken } from "@/actions/appointments";
+import { Textarea } from "@/components/ui/textarea";
 import useFetch from "@/hooks/use-fetch";
-import { toast } from "sonner";
+import { format } from "date-fns";
+import {
+  Calendar,
+  CheckCircle,
+  Clock,
+  Edit,
+  Loader2,
+  Stethoscope,
+  User,
+  Video,
+  X,
+} from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { toast } from "sonner";
+
 
 export function AppointmentCard({
   appointment,
   userRole,
   refetchAppointments,
+  appointmentCounts
 }) {
   const [open, setOpen] = useState(false);
   const [action, setAction] = useState(null); // 'cancel', 'notes', 'video', or 'complete'
@@ -229,84 +231,84 @@ export function AppointmentCard({
   return (
     <>
       <Card className="border-emerald-900/20 hover:border-emerald-700/30 transition-all">
-        <CardContent className="p-4">
-          <div className="flex flex-col md:flex-row justify-between gap-4">
-            <div className="flex items-start gap-3">
-              <div className="bg-muted/20 rounded-full p-2 mt-1">
-                {otherPartyIcon}
-              </div>
-              <div>
-                <h3 className="font-medium text-white">
-                  {userRole === "DOCTOR"
-                    ? otherParty.name
-                    : `Dr. ${otherParty.name}`}
-                </h3>
-                {userRole === "DOCTOR" && (
-                  <p className="text-sm text-muted-foreground">
-                    {otherParty.email}
-                  </p>
-                )}
-                {userRole === "PATIENT" && (
-                  <p className="text-sm text-muted-foreground">
-                    {otherParty.specialty}
-                  </p>
-                )}
-                <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                  <Calendar className="h-4 w-4 mr-1" />
-                  <span>{formatDateTime(appointment.startTime)}</span>
-                </div>
-                <div className="flex items-center mt-1 text-sm text-muted-foreground">
-                  <Clock className="h-4 w-4 mr-1" />
-                  <span>
-                    {formatTime(appointment.startTime)} -{" "}
-                    {formatTime(appointment.endTime)}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div className="flex flex-col gap-2 self-end md:self-start">
-              <Badge
-                variant="outline"
-                className={
-                  appointment.status === "COMPLETED"
-                    ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-400"
-                    : appointment.status === "CANCELLED"
-                    ? "bg-red-900/20 border-red-900/30 text-red-400"
-                    : "bg-amber-900/20 border-amber-900/30 text-amber-400"
-                }
-              >
-                {appointment.status}
-              </Badge>
-              <div className="flex gap-2 mt-2 flex-wrap">
-                {canMarkCompleted() && (
-                  <Button
-                    size="sm"
-                    onClick={handleMarkCompleted}
-                    disabled={completeLoading}
-                    className="bg-emerald-600 hover:bg-emerald-700"
-                  >
-                    {completeLoading ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <>
-                        <CheckCircle className="h-4 w-4 mr-1" />
-                        Complete
-                      </>
+            <CardContent className="p-4">
+              <div className="flex flex-col md:flex-row justify-between gap-4">
+                <div className="flex items-start gap-3">
+                  <div className="bg-muted/20 rounded-full p-2 mt-1">
+                    {otherPartyIcon}
+                  </div>
+                  <div>
+                    <h3 className="font-medium text-white">
+                      {userRole === "DOCTOR"
+                        ? otherParty.name
+                        : `Dr. ${otherParty.name}`}
+                    </h3>
+                    {userRole === "DOCTOR" && (
+                      <p className="text-sm text-muted-foreground">
+                        {otherParty.email}
+                      </p>
                     )}
-                  </Button>
-                )}
-                <Button
-                  size="sm"
-                  variant="outline"
-                  className="border-emerald-900/30"
-                  onClick={() => setOpen(true)}
-                >
-                  View Details
-                </Button>
+                    {userRole === "PATIENT" && (
+                      <p className="text-sm text-muted-foreground">
+                        {otherParty.specialty}
+                      </p>
+                    )}
+                    <div className="flex items-center mt-2 text-sm text-muted-foreground">
+                      <Calendar className="h-4 w-4 mr-1" />
+                      <span>{formatDateTime(appointment.startTime)}</span>
+                    </div>
+                    <div className="flex items-center mt-1 text-sm text-muted-foreground">
+                      <Clock className="h-4 w-4 mr-1" />
+                      <span>
+                        {formatTime(appointment.startTime)} -{" "}
+                        {formatTime(appointment.endTime)}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex flex-col gap-2 self-end md:self-start">
+                  <Badge
+                    variant="outline"
+                    className={
+                      appointment.status === "COMPLETED"
+                        ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-400"
+                        : appointment.status === "CANCELLED"
+                        ? "bg-red-900/20 border-red-900/30 text-red-400"
+                        : "bg-amber-900/20 border-amber-900/30 text-amber-400"
+                    }
+                  >
+                    {appointment.status}
+                  </Badge>
+                  <div className="flex gap-2 mt-2 flex-wrap">
+                    {canMarkCompleted() && (
+                      <Button
+                        size="sm"
+                        onClick={handleMarkCompleted}
+                        disabled={completeLoading}
+                        className="bg-emerald-600 hover:bg-emerald-700"
+                      >
+                        {completeLoading ? (
+                          <Loader2 className="h-4 w-4 animate-spin" />
+                        ) : (
+                          <>
+                            <CheckCircle className="h-4 w-4 mr-1" />
+                            Complete
+                          </>
+                        )}
+                      </Button>
+                    )}
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      className="border-emerald-900/30"
+                      onClick={() => setOpen(true)}
+                    >
+                      View Details
+                    </Button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-        </CardContent>
+            </CardContent>
       </Card>
 
       {/* Appointment Details Dialog */}

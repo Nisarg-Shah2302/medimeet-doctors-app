@@ -143,22 +143,43 @@ export async function getDoctorAppointments() {
       throw new Error("Doctor not found");
     }
 
-    const appointments = await db.appointment.findMany({
-      where: {
-        doctorId: doctor.id,
-        status: {
-          in: ["SCHEDULED"],
+    const appointmentsWithCounts = await db.$transaction(async (tx) => {
+      // GET ALL APPOINTMENTS
+      const appointments = await tx.appointment.findMany({
+        where: {
+          doctorId: doctor.id,
         },
-      },
-      include: {
-        patient: true,
-      },
-      orderBy: {
-        startTime: "asc",
-      },
+        include: {
+          patient: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              imageUrl: true,
+            },
+          },
+        },
+        orderBy: {
+          startTime: "asc",
+        },
+      });
+
+      // GET APPOINTMENT COUNTS BASED ON STATUS FOR THE DOCTOR
+      const appointmentCounts = await tx.appointment.groupBy({
+        by: ["status"],
+        where: {
+          doctorId: doctor.id,
+        },
+        _count: true,
+      });
+
+      return { appointments, appointmentCounts };
     });
 
-    return { appointments };
+    return {
+      appointments: appointmentsWithCounts.appointments,
+      appointmentCounts: appointmentsWithCounts.appointmentCounts,
+    };
   } catch (error) {
     throw new Error("Failed to fetch appointments " + error.message);
   }
