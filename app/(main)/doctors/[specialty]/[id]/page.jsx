@@ -11,6 +11,7 @@ export default async function DoctorProfilePage({ params }) {
       getDoctorById(id),
       getAvailableTimeSlots(id),
     ]);
+    console.log("🚀 ~ DoctorProfilePage ~ slotsData:", slotsData)
 
     return (
       <DoctorProfile

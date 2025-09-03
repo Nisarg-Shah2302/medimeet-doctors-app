@@ -421,6 +421,7 @@ export async function getAvailableTimeSlots(doctorId) {
       slots,
     }));
 
+    console.log("🚀 ~ getAvailableTimeSlots ~ result:", result)
     return { days: result };
   } catch (error) {
     console.error("Failed to fetch available slots:", error);
