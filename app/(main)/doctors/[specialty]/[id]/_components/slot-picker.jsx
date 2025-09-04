@@ -21,6 +21,7 @@ export function SlotPicker({ days, onSelectSlot }) {
 
   const confirmSelection = () => {
     if (selectedSlot) {
+      console.log("🚀 ~ confirmSelection ~ selectedSlot:", selectedSlot)
       onSelectSlot(selectedSlot);
     }
   };
@@ -65,6 +66,7 @@ export function SlotPicker({ days, onSelectSlot }) {
               </div>
             ) : (
               <div className="space-y-3">
+                {console.log("🚀 ~ day.slots:", day.slots)}
                 <h3 className="text-lg font-medium text-white mb-2">
                   {day.displayDate}
                 </h3>
