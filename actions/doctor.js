@@ -65,15 +65,15 @@ export async function setAvailabilitySlots(formData) {
       }
     }
 
-          // Create new availability slot
-      const newSlot = await db.availability.create({
-        data: {
-          doctorId: doctor.id,
-          startTime: new Date(startTime),
-          endTime: new Date(endTime),
-          status: "AVAILABLE",
-        },
-      });
+    // Create new availability slot
+    const newSlot = await db.availability.create({
+      data: {
+        doctorId: doctor.id,
+        startTime: new Date(startTime),
+        endTime: new Date(endTime),
+        status: "AVAILABLE",
+      },
+    });
 
     revalidatePath("/doctor");
     return { success: true, slot: newSlot };
@@ -146,10 +146,10 @@ export async function getDoctorAppointments() {
     const appointmentsWithCounts = await db.$transaction(async (tx) => {
       // GET ALL APPOINTMENTS
       const appointments = await tx.appointment.findMany({
-        where: {
-          doctorId: doctor.id,
-        },
-        include: {
+      where: {
+        doctorId: doctor.id,
+      },
+      include: {
           patient: {
             select: {
               id: true,
@@ -158,11 +158,11 @@ export async function getDoctorAppointments() {
               imageUrl: true,
             },
           },
-        },
-        orderBy: {
-          startTime: "asc",
-        },
-      });
+      },
+      orderBy: {
+        startTime: "asc",
+      },
+    });
 
       // GET APPOINTMENT COUNTS BASED ON STATUS FOR THE DOCTOR
       const appointmentCounts = await tx.appointment.groupBy({

@@ -55,8 +55,6 @@ export function AvailabilitySettings({ slots }) {
 
     const formData = new FormData();
 
-    const today = new Date().toISOString().split("T")[0];
-
     // Create date objects
     const startDate = createLocalDateFromTime(data.startTime);
     const endDate = createLocalDateFromTime(data.endTime);
@@ -66,8 +64,8 @@ export function AvailabilitySettings({ slots }) {
       return;
     }
 
-    formData.append("startTime", startDate.toISOString());
-    formData.append("endTime", endDate.toISOString());
+    formData.append("startTime", startDate);
+    formData.append("endTime", endDate);
 
     await submitSlots(formData);
   };
