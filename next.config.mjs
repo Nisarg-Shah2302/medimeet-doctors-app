@@ -1,4 +1,7 @@
 /** @type {import('next').NextConfig} */
+// Ensure server-side date formatting uses IST (Asia/Kolkata)
+process.env.TZ = "Asia/Kolkata";
+
 const nextConfig = {
   experimental: {
     serverComponentsHmrCache: false, // Disable for fresh auth/appointment data

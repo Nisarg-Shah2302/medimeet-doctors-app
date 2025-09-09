@@ -1,5 +1,6 @@
 "use server";
 
+import "@/lib/init-timezone";
 import { db } from "@/lib/prisma";
 import { auth } from "@clerk/nextjs/server";
 import { revalidatePath } from "next/cache";
@@ -400,8 +401,8 @@ export async function getAvailableTimeSlots(doctorId) {
 
         if (!overlaps) {
           availableSlotsByDay[dayString].push({
-            startTime: current.toISOString(),
-            endTime: next.toISOString(),
+            startTime: current,
+            endTime: next,
             formatted: `${format(current, "h:mm a")} - ${format(next, "h:mm a")}`,
             day: format(current, "EEEE, MMMM d"),
           });
@@ -421,7 +422,6 @@ export async function getAvailableTimeSlots(doctorId) {
       slots,
     }));
 
-    console.log("🚀 ~ getAvailableTimeSlots ~ result:", result)
     return { days: result };
   } catch (error) {
     console.error("Failed to fetch available slots:", error);

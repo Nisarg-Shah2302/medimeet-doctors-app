@@ -231,84 +231,84 @@ export function AppointmentCard({
   return (
     <>
       <Card className="border-emerald-900/20 hover:border-emerald-700/30 transition-all">
-            <CardContent className="p-4">
-              <div className="flex flex-col md:flex-row justify-between gap-4">
-                <div className="flex items-start gap-3">
-                  <div className="bg-muted/20 rounded-full p-2 mt-1">
-                    {otherPartyIcon}
-                  </div>
-                  <div>
-                    <h3 className="font-medium text-white">
-                      {userRole === "DOCTOR"
-                        ? otherParty.name
-                        : `Dr. ${otherParty.name}`}
-                    </h3>
-                    {userRole === "DOCTOR" && (
-                      <p className="text-sm text-muted-foreground">
-                        {otherParty.email}
-                      </p>
-                    )}
-                    {userRole === "PATIENT" && (
-                      <p className="text-sm text-muted-foreground">
-                        {otherParty.specialty}
-                      </p>
-                    )}
-                    <div className="flex items-center mt-2 text-sm text-muted-foreground">
-                      <Calendar className="h-4 w-4 mr-1" />
-                      <span>{formatDateTime(appointment.startTime)}</span>
-                    </div>
-                    <div className="flex items-center mt-1 text-sm text-muted-foreground">
-                      <Clock className="h-4 w-4 mr-1" />
-                      <span>
-                        {formatTime(appointment.startTime)} -{" "}
-                        {formatTime(appointment.endTime)}
-                      </span>
-                    </div>
-                  </div>
+        <CardContent className="p-4">
+          <div className="flex flex-col md:flex-row justify-between gap-4">
+            <div className="flex items-start gap-3">
+              <div className="bg-muted/20 rounded-full p-2 mt-1">
+                {otherPartyIcon}
+              </div>
+              <div>
+                <h3 className="font-medium text-white">
+                  {userRole === "DOCTOR"
+                    ? otherParty.name
+                    : `Dr. ${otherParty.name}`}
+                </h3>
+                {userRole === "DOCTOR" && (
+                  <p className="text-sm text-muted-foreground">
+                    {otherParty.email}
+                  </p>
+                )}
+                {userRole === "PATIENT" && (
+                  <p className="text-sm text-muted-foreground">
+                    {otherParty.specialty}
+                  </p>
+                )}
+                <div className="flex items-center mt-2 text-sm text-muted-foreground">
+                  <Calendar className="h-4 w-4 mr-1" />
+                  <span>{formatDateTime(appointment.startTime)}</span>
                 </div>
-                <div className="flex flex-col gap-2 self-end md:self-start">
-                  <Badge
-                    variant="outline"
-                    className={
-                      appointment.status === "COMPLETED"
-                        ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-400"
-                        : appointment.status === "CANCELLED"
-                        ? "bg-red-900/20 border-red-900/30 text-red-400"
-                        : "bg-amber-900/20 border-amber-900/30 text-amber-400"
-                    }
-                  >
-                    {appointment.status}
-                  </Badge>
-                  <div className="flex gap-2 mt-2 flex-wrap">
-                    {canMarkCompleted() && (
-                      <Button
-                        size="sm"
-                        onClick={handleMarkCompleted}
-                        disabled={completeLoading}
-                        className="bg-emerald-600 hover:bg-emerald-700"
-                      >
-                        {completeLoading ? (
-                          <Loader2 className="h-4 w-4 animate-spin" />
-                        ) : (
-                          <>
-                            <CheckCircle className="h-4 w-4 mr-1" />
-                            Complete
-                          </>
-                        )}
-                      </Button>
-                    )}
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      className="border-emerald-900/30"
-                      onClick={() => setOpen(true)}
-                    >
-                      View Details
-                    </Button>
-                  </div>
+                <div className="flex items-center mt-1 text-sm text-muted-foreground">
+                  <Clock className="h-4 w-4 mr-1" />
+                  <span>
+                    {formatTime(appointment.startTime)} -{" "}
+                    {formatTime(appointment.endTime)}
+                  </span>
                 </div>
               </div>
-            </CardContent>
+            </div>
+            <div className="flex flex-col gap-2 self-end md:self-start">
+              <Badge
+                variant="outline"
+                className={
+                  appointment.status === "COMPLETED"
+                    ? "bg-emerald-900/20 border-emerald-900/30 text-emerald-400"
+                    : appointment.status === "CANCELLED"
+                    ? "bg-red-900/20 border-red-900/30 text-red-400"
+                    : "bg-amber-900/20 border-amber-900/30 text-amber-400"
+                }
+              >
+                {appointment.status}
+              </Badge>
+              <div className="flex gap-2 mt-2 flex-wrap">
+                {canMarkCompleted() && (
+                  <Button
+                    size="sm"
+                    onClick={handleMarkCompleted}
+                    disabled={completeLoading}
+                    className="bg-emerald-600 hover:bg-emerald-700"
+                  >
+                    {completeLoading ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <>
+                        <CheckCircle className="h-4 w-4 mr-1" />
+                        Complete
+                      </>
+                    )}
+                  </Button>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  className="border-emerald-900/30"
+                  onClick={() => setOpen(true)}
+                >
+                  View Details
+                </Button>
+              </div>
+            </div>
+          </div>
+        </CardContent>
       </Card>
 
       {/* Appointment Details Dialog */}
